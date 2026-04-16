@@ -2,11 +2,11 @@
   <PropertyGroup>
     <OutputPath>..\1.5\Assemblies</OutputPath>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyTitle>DDGLCompat</AssemblyTitle>
+    <AssemblyTitle>CarbineActionModFixes</AssemblyTitle>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    <RootNamespace>DDGLCompat</RootNamespace>
+    <RootNamespace>CarbineActionModFixes</RootNamespace>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
-    <packageId>CarbineAction.DDGLCompat</packageId>
-    <name>Dynamic Diplomacy Fixes + GL Compat</name>
+    <packageId>CarbineAction.ModFixes</packageId>
+    <name>[CarbineAction] Mod Fixes Pack</name>
     <authors>
         <li>CarbineAction</li>
     </authors>
@@ -20,28 +20,30 @@
         <li>brrainz.harmony</li>
         <li>nilchei.dynamicdiplomacycontinued</li>
         <li>m00nl1ght.GeologicalLandforms</li>
+        <li>skyarkhangel.hsk</li>
     </loadAfter>
-    <description>Fixes multiple bugs reported by Dynamic Diplomacy (Continued) users. Also adds Geological Landforms compatibility.
+    <description>A consolidated patch pack for large RimWorld mods. Each fix only activates if its target mod is loaded — safe to install even if you don't have all the patched mods. More fixes will be added over time.
 
-FIXES:
+CURRENT FIXES:
 
-1. Geological Landforms terrain conflict
-   Rejects battle tiles with extreme cliff topology (CliffAllSides, CliffValley, CliffThreeSides), cave topology, impassable hilliness, or ocean tiles. Retries up to 5 times with expanding search distance.
+--- Dynamic Diplomacy (Continued) ---
 
-2. Settlement tile validation
-   Rejects conquest events where the settlement sits on a tile that can't host a proper battle map (impassable, cave, cliff, ocean). Event retries with a different settlement instead of generating empty/broken maps.
+- Terrain validation: rejects battle tiles and conquest targets on problematic terrain (impassable mountains, extreme cliffs, caves, ocean). Retries with better tiles before giving up. Works alongside Geological Landforms.
 
-3. Shambler/infection deadlock
-   When pawns get infected and switch factions (e.g., become shamblers from Necroa virus), they used to keep the battle map open forever. Now they're cleaned from the faction list so the battle properly ends.
+- Shambler/infection deadlock: when pawns switch factions mid-battle (e.g., get infected and become shamblers), they're now cleaned from the battle faction lists so DD's win check works correctly. Prevents battle maps from staying open forever.
 
-4. Hard timeout failsafe
-   If a battle somehow runs past 7 in-game days without ending, force it to end via DD's timeout mechanism. Prevents stuck maps.
+- Hard timeout failsafe: if a battle runs past 7 game days without ending, force it to end via DD's timeout mechanism.
+
+--- Geological Landforms ---
+
+- Shared terrain utility used by DD fixes. Checks tile topology (CliffAllSides, CliffValley, etc.) to avoid problematic battle maps.
 
 COMPATIBILITY:
-- Requires: Dynamic Diplomacy - Continued
-- Optional: Geological Landforms (terrain check falls back to vanilla hilliness only)
-- Works with any faction/biome mod
+- All fixes are conditional — inactive if the target mod isn't loaded
+- Zero overhead if a mod is missing
+- Safe to install on any save
+- Works with HSK (Hardcore SK) and vanilla
 
-Logs under [DD-GL Compat] tag so you can see what's being fixed.
+All logs are prefixed with [CarbineAction Mod Fixes] for easy filtering in the debug console.
     </description>
 </ModMetaData>
