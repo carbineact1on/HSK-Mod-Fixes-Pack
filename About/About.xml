@@ -28,7 +28,12 @@ CURRENT FIXES:
 
 --- Dynamic Diplomacy (Continued) ---
 
-- Terrain validation: rejects battle tiles and conquest targets on problematic terrain (impassable mountains, extreme cliffs, caves, ocean). Retries with better tiles before giving up. Works alongside Geological Landforms.
+- Terrain validation: rejects battle tiles and conquest targets on problematic terrain. Retries with better tiles before giving up. Works alongside Geological Landforms. Rejects:
+  - Impassable mountains (vanilla mountain tiles)
+  - Extreme cliffs from Geological Landforms
+  - Cave topology
+  - Ocean/water-covered tiles
+  - Extreme temperature biomes (below -20°C or above 50°C) — covers Alpha Biomes, HMC Biomes, Vile's Biomes, etc. where pawns can't survive long enough to resolve a battle
 
 - Shambler/infection deadlock: when pawns switch factions mid-battle (e.g., get infected and become shamblers), they're now cleaned from the battle faction lists so DD's win check works correctly. Prevents battle maps from staying open forever.
 

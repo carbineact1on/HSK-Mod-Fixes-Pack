@@ -11,9 +11,17 @@ namespace ModFixesPack
     /// </summary>
     public static class TerrainUtils
     {
+        // Temperature thresholds for battle-friendly tiles (Celsius).
+        // Outside this range, pawns would take significant environmental damage
+        // and battles wouldn't resolve meaningfully. Covers extreme biomes from
+        // mods like Alpha Biomes, HMC Biomes, Vile's Biomes, etc.
+        public const float MinBattleTemp = -20f;
+        public const float MaxBattleTemp = 50f;
+
         /// <summary>
         /// Returns true if a tile is unsuitable for NPC battle simulation
-        /// due to pathing issues (impassable, ocean, extreme cliffs from GL, etc.)
+        /// due to pathing issues or extreme conditions.
+        /// Checks: impassable, ocean, extreme cliffs (GL), extreme temperatures.
         /// </summary>
         public static bool IsTileProblematic(int tileId)
         {
@@ -24,6 +32,10 @@ namespace ModFixesPack
 
             if (tile.hilliness == Hilliness.Impassable) return true;
             if (tile.WaterCovered) return true;
+
+            // Temperature check — skip extreme biomes where pawns can't survive.
+            // Uses the tile's average temperature (not current season) as a baseline.
+            if (tile.temperature < MinBattleTemp || tile.temperature > MaxBattleTemp) return true;
 
             if (ModState.GeologicalLandforms)
             {
