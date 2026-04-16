@@ -1,9 +1,0 @@
-G:\Steam\steamapps\common\RimWorld\Mods\DD-GL-Compatibility\1.5\Assemblies\DDGLCompat.dll
-G:\Steam\steamapps\common\RimWorld\Mods\DD-GL-Compatibility\1.5\Assemblies\DDGLCompat.pdb
-G:\Steam\steamapps\common\RimWorld\Mods\DD-GL-Compatibility\Source\obj\Release\DDGLCompat.csproj.AssemblyReference.cache
-G:\Steam\steamapps\common\RimWorld\Mods\DD-GL-Compatibility\Source\obj\Release\DDGLCompat.GeneratedMSBuildEditorConfig.editorconfig
-G:\Steam\steamapps\common\RimWorld\Mods\DD-GL-Compatibility\Source\obj\Release\DDGLCompat.AssemblyInfoInputs.cache
-G:\Steam\steamapps\common\RimWorld\Mods\DD-GL-Compatibility\Source\obj\Release\DDGLCompat.AssemblyInfo.cs
-G:\Steam\steamapps\common\RimWorld\Mods\DD-GL-Compatibility\Source\obj\Release\DDGLCompat.csproj.CoreCompileInputs.cache
-G:\Steam\steamapps\common\RimWorld\Mods\DD-GL-Compatibility\Source\obj\Release\DDGLCompat.dll
-G:\Steam\steamapps\common\RimWorld\Mods\DD-GL-Compatibility\Source\obj\Release\DDGLCompat.pdb

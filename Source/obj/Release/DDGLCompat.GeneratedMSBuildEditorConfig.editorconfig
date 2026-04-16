@@ -1,8 +1,0 @@
-is_global = true
-build_property.RootNamespace = DDGLCompat
-build_property.ProjectDir = G:\Steam\steamapps\common\RimWorld\Mods\DD-GL-Compatibility\Source\
-build_property.EnableComHosting = 
-build_property.EnableGeneratedComInterfaceComImportInterop = 
-build_property.CsWinRTUseWindowsUIXamlProjections = false
-build_property.EffectiveAnalysisLevelStyle = 
-build_property.EnableCodeStyleSeverity = 
