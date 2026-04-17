@@ -106,6 +106,8 @@ Effect: new weapon mods installed on top of a hand-tuned base (e.g. the HSK comm
 
 Auto-disables if Show Me Your Hands isn't loaded. Uses reflection to access WHands.ClutterHandsTDef so Mod Fixes Pack doesn't need a hard assembly reference.
 
+Credit: Show Me Your Hands by Sirvanix (original) and Mlie's Continued fork — this fix only wires up SMYH's existing WHands.ClutterHandsTDef system; the actual hand positions come from whatever preset mod is loaded alongside (the HSK community's hand-tuned preset mod being the typical source of reference data). This fix auto-fills the gaps between hand-tuned presets and weapons those presets don't cover.
+
 COMPATIBILITY:
 - All fixes are conditional — inactive if the target mod isn't loaded
 - Zero overhead if a mod is missing

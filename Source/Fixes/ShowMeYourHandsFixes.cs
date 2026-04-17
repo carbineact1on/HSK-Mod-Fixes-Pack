@@ -102,18 +102,44 @@ namespace ModFixesPack.Fixes
             new[] { "minigun", "m134" },
             new[] { "bren" },
 
-            // Melee
-            new[] { "sword" },
-            new[] { "katana" },
-            new[] { "knife", "combatknife" },
+            // Melee — blades (one-handed short)
+            new[] { "knife", "combatknife", "shiv", "tanto", "dirk", "stiletto" },
             new[] { "dagger" },
-            new[] { "spear" },
-            new[] { "axe", "battleaxe" },
-            new[] { "club" },
-            new[] { "hammer", "warhammer" },
-            new[] { "mace" },
-            new[] { "saber", "sabre" },
-            new[] { "machete" },
+            new[] { "bayonet" },
+
+            // Melee — blades (one-handed long)
+            new[] { "sword", "shortsword", "longsword", "arming", "gladius" },
+            new[] { "katana", "wakizashi", "ninjato" },
+            new[] { "saber", "sabre", "cutlass", "scimitar", "falchion" },
+            new[] { "rapier", "estoc", "smallsword" },
+            new[] { "machete", "panga", "bolo", "kukri", "khukuri" },
+            new[] { "cleaver", "butcherknife" },
+
+            // Melee — blades (two-handed)
+            new[] { "greatsword", "claymore", "zweihander", "flamberge" },
+            new[] { "nodachi", "odachi" },
+
+            // Melee — polearms
+            new[] { "spear", "pike", "lance", "javelin" },
+            new[] { "halberd", "pollaxe", "poleaxe", "bardiche" },
+            new[] { "glaive", "naginata", "guandao" },
+            new[] { "trident" },
+
+            // Melee — axes
+            new[] { "axe", "battleaxe", "handaxe", "hatchet", "tomahawk", "waraxe" },
+
+            // Melee — blunt
+            new[] { "club", "cudgel", "baton", "truncheon", "nightstick", "trenchclub" },
+            new[] { "hammer", "warhammer", "sledge", "mallet", "maul" },
+            new[] { "mace", "morningstar", "flail" },
+
+            // Melee — exotic
+            new[] { "sickle", "kama" },
+            new[] { "scythe" },
+            new[] { "nunchaku", "nunchucks" },
+            new[] { "whip" },
+            new[] { "chainsaw" },
+            new[] { "fist", "knuckles", "brassknuckles", "punchdagger" },
 
             // Heavy
             new[] { "rpg" },
@@ -133,12 +159,32 @@ namespace ModFixesPack.Fixes
         {
             "gun", "meleeweapon", "weapon", "hsk", "rh2", "rf", "hmc", "pa", "rn",
             "rngun", "rnmelee", "rk", "tfj", "vpe", "norbal", "norbalmelee", "norbalmeleeweapon",
-            "mlie", "sk", "cp", "mag"
+            "mlie", "sk", "cp", "mag",
+            // Generic descriptor tokens — too broad, cause cross-family false matches
+            // (e.g. "combat" letting CombatKnife match CombatShotgun on shared token alone).
+            "combat", "tactical", "military", "modern", "advanced", "heavy", "light",
+            "standard", "basic", "default", "custom", "improved", "upgraded", "vintage",
+            "old", "new", "the", "of", "and",
         };
 
         // Minimum match score below which we don't inject — better to let SMYH's crude
-        // fallback run than to copy totally unrelated hand positions.
-        private const int MinMatchScore = 3;
+        // pixel-analysis fallback run than to copy totally unrelated hand positions.
+        //
+        // Split thresholds because melee and ranged have different forgivingness:
+        //  - Melee hand positions are highly specific (knife grip vs sword pommel vs
+        //    spear shaft). A weak match looks visibly wrong. Strict threshold.
+        //  - Ranged hand positions are more standardized (pistol grip + foregrip across
+        //    most guns). Even a rough family miss on a pistol usually looks OK because
+        //    both hands land somewhere near the grip. More forgiving threshold.
+        //
+        // Score tiers for reference:
+        //   3  = category match only (no signal)
+        //   6  = category + weak generic token overlap
+        //   8  = category + moderate token overlap
+        //   10 = family hit OR 2+ token overlaps (strong signal)
+        //   18+ = family + category + drawSize — rock-solid
+        private const int MinMatchScoreMelee  = 10;
+        private const int MinMatchScoreRanged = 6;
 
         /// <summary>
         /// Reference entry extracted from an existing ClutterHandsTDef.CompTargets entry.
@@ -227,6 +273,13 @@ namespace ModFixesPack.Fixes
                         var weaponDef = DefDatabase<ThingDef>.GetNamedSilentFail(targetDefName);
                         if (weaponDef == null) continue; // reference points at a weapon not in this modlist
 
+                        // Filter out body-part "weapons" (SmilodonFangs, ElasmotheriumHorn,
+                        // TriceratopsHorn, etc.). These aren't wielded items; they're natural
+                        // animal weapons that leak into DefDatabase as ThingDefs with IsWeapon=true.
+                        // Using them as references produces wildly wrong hand positions on the
+                        // closest-match uncovered weapons.
+                        if (weaponDef.equipmentType != EquipmentType.Primary) continue;
+
                         references.Add(new Reference
                         {
                             DefName     = targetDefName,
@@ -249,14 +302,23 @@ namespace ModFixesPack.Fixes
             }
 
             // === Step 2: Find all weapon ThingDefs not already covered ===
+            // Require equipmentType == Primary to exclude:
+            //  - Body-part "weapons" (TriceratopsHorn, SmilodonFangs)
+            //  - Natural attack ThingDefs (fists, claws)
+            //  - Projectiles/landmines/thrown resources (NuclearLandmine, GU_RedWood)
+            // These aren't held in hand — matching them would waste a reference slot.
             var uncovered = DefDatabase<ThingDef>.AllDefs
-                .Where(d => d.IsWeapon && !d.destroyOnDrop && !coveredDefNames.Contains(d.defName))
+                .Where(d => d.IsWeapon && !d.destroyOnDrop
+                            && d.equipmentType == EquipmentType.Primary
+                            && !coveredDefNames.Contains(d.defName))
                 .ToList();
 
             // === Step 3: For each uncovered weapon, score against every reference, keep best ===
             int matchedCount = 0;
             int unmatchedCount = 0;
             var autoMatchedEntries = new List<(Vector3 main, Vector3 sec, float mainRot, float secRot, string targetDefName)>();
+            var unmatchedList = new List<string>();
+            var meleeMatchLog = new List<string>(); // per-match diagnostics for melee only (ranged too spammy)
 
             foreach (var weapon in uncovered)
             {
@@ -265,10 +327,17 @@ namespace ModFixesPack.Fixes
                 var isRanged = IsRangedWeapon(weapon);
 
                 Reference? best = null;
-                int bestScore = MinMatchScore - 1;
+                int minScore = isRanged ? MinMatchScoreRanged : MinMatchScoreMelee;
+                int bestScore = minScore - 1;
 
                 foreach (var r in references)
                 {
+                    // Hard gate: never match a melee weapon to a ranged reference or vice versa.
+                    // Cross-category matches produce the worst visual outcomes (pistol hand-grip
+                    // on a sword handle, etc.) and the soft -5 penalty wasn't always enough to
+                    // prevent it when a strong generic token overlap existed.
+                    if (isRanged != r.IsRanged) continue;
+
                     int score = ScoreMatch(tokens, drawSize, isRanged, r);
                     if (score > bestScore)
                     {
@@ -283,16 +352,24 @@ namespace ModFixesPack.Fixes
                                             best.Value.MainRotation, best.Value.SecRotation,
                                             weapon.defName));
                     matchedCount++;
+
+                    // Log melee matches so we can spot bad references visually from the log
+                    // (e.g. Kukri → BreadKnife is suspicious even at score 8).
+                    if (!isRanged)
+                    {
+                        meleeMatchLog.Add($"{weapon.defName} → {best.Value.DefName} (score {bestScore})");
+                    }
                 }
                 else
                 {
                     unmatchedCount++;
+                    unmatchedList.Add(weapon.defName);
                 }
             }
 
             if (autoMatchedEntries.Count == 0)
             {
-                Log.Message($"[Mod Fixes Pack] ShowMeYourHands: {references.Count} reference entries; all {uncovered.Count} uncovered weapons scored below threshold ({MinMatchScore}). Nothing injected.");
+                Log.Message($"[Mod Fixes Pack] ShowMeYourHands: {references.Count} reference entries; all {uncovered.Count} uncovered weapons scored below threshold (melee {MinMatchScoreMelee}, ranged {MinMatchScoreRanged}). Nothing injected.");
                 return;
             }
 
@@ -336,6 +413,24 @@ namespace ModFixesPack.Fixes
             Log.Message(
                 $"[Mod Fixes Pack] ShowMeYourHands: auto-matched {matchedCount} weapons " +
                 $"from {references.Count} reference entries ({unmatchedCount} uncovered skipped as low-confidence).");
+
+            // Log the specific defNames of skipped weapons so we can diagnose which families
+            // are missing from our keyword table (or which weapons have dimensions too unusual
+            // for confident matching). Capped at 20 to avoid log spam on wildly-modded lists.
+            if (unmatchedList.Count > 0)
+            {
+                var sample = string.Join(", ", unmatchedList.Take(20));
+                var suffix = unmatchedList.Count > 20 ? $" ... (+{unmatchedList.Count - 20} more)" : "";
+                Log.Message($"[Mod Fixes Pack] ShowMeYourHands: skipped weapons: {sample}{suffix}");
+            }
+
+            // Dump every melee match with its chosen reference + score so we can eyeball
+            // bad matches (ranged dumps would be too noisy — most guns match well).
+            if (meleeMatchLog.Count > 0)
+            {
+                Log.Message($"[Mod Fixes Pack] ShowMeYourHands: melee matches ({meleeMatchLog.Count}):\n  " +
+                            string.Join("\n  ", meleeMatchLog));
+            }
         }
 
         /// <summary>
