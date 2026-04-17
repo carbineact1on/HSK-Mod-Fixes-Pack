@@ -14,6 +14,7 @@ namespace ModFixesPack
         public static bool RealRuins { get; private set; }
         public static bool HSK { get; private set; }
         public static bool MultiLangColorfulTraits { get; private set; }
+        public static bool ShowMeYourHands { get; private set; }
 
         // Add more as we add fixes for other mods
         // public static bool SomeOtherMod { get; private set; }
@@ -25,12 +26,14 @@ namespace ModFixesPack
             RealRuins = ModsConfig.IsActive("Woolstrand.RealRuins");
             HSK = ModsConfig.IsActive("skyarkhangel.hsk");
             MultiLangColorfulTraits = ModsConfig.IsActive("multilangcolorfultraits.pirateby");
+            ShowMeYourHands = ModsConfig.IsActive("Mlie.ShowMeYourHands");
 
             LogStatus("Dynamic Diplomacy", DynamicDiplomacy);
             LogStatus("Geological Landforms", GeologicalLandforms);
             LogStatus("Real Ruins", RealRuins);
             LogStatus("HSK (Hardcore SK)", HSK);
             LogStatus("MultiLang Colorful Traits", MultiLangColorfulTraits);
+            LogStatus("Show Me Your Hands", ShowMeYourHands);
         }
 
         private static void LogStatus(string modName, bool loaded)
