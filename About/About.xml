@@ -22,7 +22,6 @@
         <li>m00nl1ght.GeologicalLandforms</li>
         <li>Woolstrand.RealRuins</li>
         <li>multilangcolorfultraits.pirateby</li>
-        <li>Mlie.ShowMeYourHands</li>
         <li>skyarkhangel.hsk</li>
     </loadAfter>
     <description>A consolidated patch pack for large RimWorld mods. Each fix only activates if its target mod is loaded — safe to install even if you don't have all the patched mods. More fixes will be added over time.
@@ -92,21 +91,6 @@ NEW MOD FIX: MultiLang Colorful Traits auto-extend
 Net effect: before the fix, ~30% of HSK modpack traits are colored (MultiLang's hard-coded lists). After, ~100% of traits are colored. MultiLang's hand-tuning is preserved on traits it knows; we just fill the gaps.
 
 Auto-disables if MultiLang Colorful Traits isn't loaded.
-
---- Show Me Your Hands ---
-
-NEW MOD FIX: Show Me Your Hands auto-matcher
-- Show Me Your Hands (Mlie's Continued fork) displays visible hands on pawn weapons, but per-weapon hand positions have to be manually tuned — SMYH's built-in auto-gen is crude and most modded weapons need hand-tuning to look right. Players have shipped their hand-tuned configs as mods (one big WHands.ClutterHandsTDef def), but those only cover the weapons they tuned; any new weapon mod installed later falls through to the crude fallback.
-- This fix runs at startup, reads every WHands.ClutterHandsTDef entry already loaded in DefDatabase as a "reference library", and for every weapon ThingDef that isn't already covered, auto-copies the hand position from the closest-matching reference weapon.
-- Matching is keyword + drawSize + category: +10 per shared weapon-family token (AK matches AK, Mosin matches Mosin, M4 matches M16-family, etc.), +3 if both ranged or both melee, -2 per drawSize unit of difference. Below a minimum confidence score the weapon is skipped (falls through to SMYH's own fallback) rather than risk a bad match.
-- Hard-coded weapon family table covers 40+ common real-world weapon families (pistols, SMGs, rifles, snipers, shotguns, LMGs, swords, knives, spears, bows, etc.). Mod prefixes (Gun_, HSK_, RH2_, HMC_, etc.) are stripped from tokens before matching so they don't drown out the actual weapon identity.
-- Log example: [Mod Fixes Pack] ShowMeYourHands: auto-matched 285 weapons from 422 reference entries (2 uncovered skipped as low-confidence).
-
-Effect: new weapon mods installed on top of a hand-tuned base (e.g. the HSK community's Show-Me-Your-Hands preset mod) get hand positions automatically, without the player needing to run SMYH's generate-config button or hand-tune every weapon. CE conversions, new faction mods, custom weapon packs — all get free coverage.
-
-Auto-disables if Show Me Your Hands isn't loaded. Uses reflection to access WHands.ClutterHandsTDef so Mod Fixes Pack doesn't need a hard assembly reference.
-
-Credit: Show Me Your Hands by Sirvanix (original) and Mlie's Continued fork. Hand-position preset data bundled with this mod authored by Elldar (HSK Discord, @Elldar) — used with permission. The preset library covers 17 mods (Core, HSK, Royalty, Anomaly, HMC Biomes, Ratkin, Parabellum, Red Dragon, VPE, Vile's Metallurgy, Vile's Pre-industrial, and more). This fix adds an auto-matcher that uses the preset data as reference and extends coverage to uncovered weapon mods (CE conversions, faction mods) via family/size/category matching. Hand-position XMLs are gated behind IfModActive="Mlie.ShowMeYourHands" and won't load without it.
 
 COMPATIBILITY:
 - All fixes are conditional — inactive if the target mod isn't loaded
