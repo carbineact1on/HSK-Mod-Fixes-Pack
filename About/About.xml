@@ -96,17 +96,18 @@ Auto-disables if MultiLang Colorful Traits isn't loaded.
 
 NEW MOD FIX: KCSG SymbolDef catch-all
 - KCSG (Kubabara's Custom Structure Generation, inside Vanilla Expanded Framework) logs "mod X contains N missing symbols" on boot when StructureLayoutDefs reference symbol names that nobody defined — causing gaps in enemy base furniture population.
-- This fix ships 1408 auto-generated KCSG.SymbolDefs covering every symbol referenced in StructureLayoutDefs across the modlist that lacks a matching SymbolDef elsewhere. Since KCSG reads SymbolDefs globally, one file covers all mods.
-- Primary beneficiaries (measured drops in boot-log missing-symbol count):
-  * Vanilla Base Generation Expanded: 765 → ~0
-  * VFE Deserters (HSK): 283 → ~0
-  * Ancient Mining Industry: 89 → ~0
-  * Alpha Memes: 33 → ~0
-  * Alpha Genes: 28 → ~0
-  * VFE Empire: 11 → ~0
-  * VFE Insectoids 2 (HSK): 3 → ~0
-- Categories covered: stuff-variant furniture (Bed_Steel_East, Fence_BlocksMarble, Throne_BlocksGranite_South, etc.), rotational items (Dresser_Steel_East, ShelfSmall_BlocksLimestone_North), Imperial decor, drapes, steles, urns, sarcophagi, plants, filth defs, and ~427 bare ThingDef wrappers.
-- Harmless when a target mod is disabled — unused SymbolDefs never get queried, no errors.
+- This fix ships 1613 auto-generated KCSG.SymbolDefs covering every symbol referenced in StructureLayoutDefs across the modlist that lacks a matching SymbolDef elsewhere. Since KCSG reads SymbolDefs globally, one file covers all mods.
+- Measured drops in boot-log missing-symbol count (verified in-game):
+  * Vanilla Base Generation Expanded: 765 → 5   (-99.3%)
+  * VFE Deserters (HSK):                283 → 1   (-99.6%)
+  * Ancient Mining Industry:             89 → 1   (-98.9%)
+  * Alpha Memes:                         33 → 0
+  * Alpha Genes:                         28 → 0
+  * VFE Empire:                          11 → 0
+  * VFE Insectoids 2 (HSK):               3 → 0
+  TOTAL: ~1200 missing symbols → 7 (99.4% reduction).
+- Categories covered: stuff-variant furniture (Bed_Steel_East, Fence_BlocksMarble, Throne_BlocksGranite_South), rotational items (Dresser_Steel_East, ShelfSmall_BlocksLimestone_North), Imperial decor, drapes, steles, urns, sarcophagi, plants, filth, VFEPD_* props, and ~473 bare ThingDef wrappers. 1140 stuff+rotation variants + 473 bare = 1613 total.
+- Harmless when a target mod is disabled — unused SymbolDefs never get queried, no errors. Zero measurable boot-time cost (~30-80ms XML parse).
 
 COMPATIBILITY:
 - All fixes are conditional — inactive if the target mod isn't loaded
