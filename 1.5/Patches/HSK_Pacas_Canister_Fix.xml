@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    HSK Mod Fixes Pack: temporary fix for Pacas Patches Compilation's
+    Canister ammo content while we wait for upstream.
+
+    Issues being patched:
+      1. Texture path 'Things/Ammo/HighCaliber/Bofors/Canister' doesn't
+         exist anywhere (renders as red X). Pointing it at CE's existing
+         Cannon/Tank/Canister sprite which DOES exist.
+      2. thingCategory is set to 'Ammo12Gauge' but 40x311mmR is
+         autocannon, not 12 gauge. Re-categorising to HSKVFED_Ammo40x311mmR
+         (the autocannon category our HSK-VFE-Deserters mod defines).
+      3. CE auto-craft (via the CE_AutoEnableCrafting tradeTag inherited
+         from Pacas's abstract Ammo40x311mmRBase) generates a recipe
+         that asks for 216 raw Steel — in HSK that's iron ore, not
+         refined material. Adding a <costList> to the concrete Canister
+         ammo def so CE's auto-recipe uses HSK-correct materials
+         (SteelBar + FSX) at sane quantities.
+
+    All three operations are guarded with FindMod so they no-op if Pacas
+    Patches Compilation isn't installed.
+
+    Once Pacas fixes these issues upstream, this entire patch file can
+    be deleted.
+-->
+<Patch>
+
+    <Operation Class="PatchOperationFindMod">
+        <mods>
+            <li>Pacas Patches Compilation</li>
+        </mods>
+        <match Class="PatchOperationSequence">
+            <success>Always</success>
+            <operations>
+
+                <!-- Fix 1: Replace missing texture path with an existing CE Canister sprite -->
+                <li Class="PatchOperationReplace">
+                    <success>Always</success>
+                    <xpath>Defs/ThingDef[defName="Ammo_40x311mmR_Canister"]/graphicData/texPath</xpath>
+                    <value>
+                        <texPath>Things/Ammo/Cannon/Tank/Canister/Canister</texPath>
+                    </value>
+                </li>
+                <li Class="PatchOperationReplace">
+                    <success>Always</success>
+                    <xpath>Defs/ThingDef[defName="Ammo_Autocannon_Canister"]/graphicData/texPath</xpath>
+                    <value>
+                        <texPath>Things/Ammo/Cannon/Tank/Canister/Canister</texPath>
+                    </value>
+                </li>
+
+                <!-- Fix 2: Move from Ammo12Gauge to a proper autocannon category.
+                     Using vanilla CE 'AmmoHighCaliber' since HSKVFED's category
+                     is namespaced and may not exist on every modlist. -->
+                <li Class="PatchOperationReplace">
+                    <success>Always</success>
+                    <xpath>Defs/ThingDef[defName="Ammo_40x311mmR_Canister"]/thingCategories</xpath>
+                    <value>
+                        <thingCategories>
+                            <li>AmmoHighCaliber</li>
+                        </thingCategories>
+                    </value>
+                </li>
+                <li Class="PatchOperationReplace">
+                    <success>Always</success>
+                    <xpath>Defs/ThingDef[defName="Ammo_Autocannon_Canister"]/thingCategories</xpath>
+                    <value>
+                        <thingCategories>
+                            <li>AmmoHighCaliber</li>
+                        </thingCategories>
+                    </value>
+                </li>
+
+                <!-- Fix 3: Add costList so CE's auto-craft recipe asks for
+                     HSK-refined SteelBar + FSX (explosive filler) instead of
+                     216 raw Steel/Iron Ore. -->
+                <li Class="PatchOperationAdd">
+                    <success>Always</success>
+                    <xpath>Defs/ThingDef[defName="Ammo_40x311mmR_Canister"]</xpath>
+                    <value>
+                        <costList>
+                            <SteelBar>4</SteelBar>
+                            <FSX>2</FSX>
+                        </costList>
+                    </value>
+                </li>
+                <li Class="PatchOperationAdd">
+                    <success>Always</success>
+                    <xpath>Defs/ThingDef[defName="Ammo_Autocannon_Canister"]</xpath>
+                    <value>
+                        <costList>
+                            <SteelBar>4</SteelBar>
+                            <FSX>2</FSX>
+                        </costList>
+                    </value>
+                </li>
+
+            </operations>
+        </match>
+    </Operation>
+
+</Patch>
